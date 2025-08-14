@@ -2,6 +2,6 @@ Flask
 gunicorn
 python-dotenv
 sentence-transformers
-pinecone-client
+pinecone
 google-generativeai
 langchain-docling
