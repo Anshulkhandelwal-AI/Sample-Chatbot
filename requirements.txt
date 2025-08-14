@@ -1,0 +1,7 @@
+Flask
+gunicorn
+python-dotenv
+sentence-transformers
+pinecone-client
+google-generativeai
+langchain-docling

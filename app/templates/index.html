@@ -1,0 +1,387 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RAG PDF Chatbot</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    .upload-container {
+      margin-top: 100px;
+      text-align: center;
+    }
+
+    form {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    input[type="file"] {
+      margin-bottom: 10px;
+    }
+
+    .chatbox {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 350px;
+      height: 500px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1000;
+    }
+
+    .chat-header {
+      background: #4a90e2;
+      color: white;
+      padding: 15px;
+      font-weight: bold;
+    }
+
+    .chat-body {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chat-input {
+      border-top: 1px solid #ddd;
+      display: flex;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+
+    .chat-input button {
+      padding: 10px 15px;
+      background: #4a90e2;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: #dcf8c6;
+      padding: 10px;
+      border-radius: 10px 10px 0 10px;
+      max-width: 80%;
+    }
+
+    .message.ai {
+      align-self: flex-start;
+      background: #e9ecef;
+      padding: 10px;
+      border-radius: 10px 10px 10px 0;
+      max-width: 80%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="upload-container" id="uploadSection">
+    <h2>Upload your PDF</h2>
+    <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+      <input type="file" name="file" required />
+      <br><br>
+      <input type="submit" value="Upload PDF" />
+    </form>
+  </div>
+
+  <div class="chatbox" id="chatbox">
+    <div class="chat-header">PDF Chatbot</div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-input">
+      <input type="text" id="query" placeholder="Ask a question..." />
+      <button onclick="sendQuery()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const uploadForm = document.getElementById('uploadForm');
+    const uploadSection = document.getElementById('uploadSection');
+    const chatbox = document.getElementById('chatbox');
+    const chatBody = document.getElementById('chatBody');
+    const queryInput = document.getElementById('query');
+
+    uploadForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(uploadForm);
+
+      const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        uploadSection.style.display = 'none';
+        chatbox.style.display = 'flex';
+      } else {
+        alert('Failed to upload PDF.');
+      }
+    });
+
+    function appendMessage(text, sender) {
+      const msg = document.createElement('div');
+      msg.className = 'message ' + sender;
+      msg.innerText = text;
+      chatBody.appendChild(msg);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    async function sendQuery() {
+      const query = queryInput.value.trim();
+      if (!query) return;
+
+      appendMessage(query, 'user');
+      queryInput.value = '';
+
+      const res = await fetch('/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      });
+
+      const data = await res.json();
+      const answer = data.answer || data.Error || "No response";
+
+      appendMessage(answer, 'ai');
+    }
+  </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RAG PDF Chatbot</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    .upload-container {
+      margin-top: 40px;
+      text-align: center;
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      max-width: 400px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    input[type="submit"] {
+      background: #4a90e2;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+      background: #357ab8;
+    }
+
+    .chatbox {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 350px;
+      height: 500px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1000;
+    }
+
+    .chat-header {
+      background: #4a90e2;
+      color: white;
+      padding: 15px;
+      font-weight: bold;
+    }
+
+    .chat-body {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chat-input {
+      border-top: 1px solid #ddd;
+      display: flex;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+
+    .chat-input button {
+      padding: 10px 15px;
+      background: #4a90e2;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: #dcf8c6;
+      padding: 10px;
+      border-radius: 10px 10px 0 10px;
+      max-width: 80%;
+    }
+
+    .message.ai {
+      align-self: flex-start;
+      background: #e9ecef;
+      padding: 10px;
+      border-radius: 10px 10px 10px 0;
+      max-width: 80%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="upload-container" id="uploadSection">
+    <h2>Upload your PDF</h2>
+    <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+      <input type="file" name="file" />
+      <input type="submit" value="Upload PDF" />
+    </form>
+  </div>
+
+  <div class="chatbox" id="chatbox">
+    <div class="chat-header">PDF Chatbot</div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-input">
+      <input type="text" id="query" placeholder="Ask a question..." />
+      <button onclick="sendQuery()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const uploadForm = document.getElementById('uploadForm');
+    const uploadSection = document.getElementById('uploadSection');
+    const chatbox = document.getElementById('chatbox');
+    const chatBody = document.getElementById('chatBody');
+    const queryInput = document.getElementById('query');
+
+    // Show chatbox immediately on load
+    window.onload = () => {
+      chatbox.style.display = 'flex';
+    };
+
+    uploadForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(uploadForm);
+
+      const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        alert('PDF uploaded successfully.');
+        uploadForm.reset();
+      } else {
+        alert('Failed to upload PDF.');
+      }
+    });
+
+    function appendMessage(text, sender) {
+      const msg = document.createElement('div');
+      msg.className = 'message ' + sender;
+      msg.innerText = text;
+      chatBody.appendChild(msg);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    async function sendQuery() {
+      const query = queryInput.value.trim();
+      if (!query) return;
+
+      appendMessage(query, 'user');
+      queryInput.value = '';
+
+      try {
+        const res = await fetch('/query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query })
+        });
+
+        const data = await res.json();
+        const answer = data.answer || data.Error || "No response";
+
+        appendMessage(answer, 'ai');
+      } catch (error) {
+        appendMessage("Error connecting to server.", 'ai');
+      }
+    }
+  </script>
+</body>
+</html>
+
